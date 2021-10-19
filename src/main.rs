@@ -1,21 +1,42 @@
 use std::io::stdin;
 
 #[derive(Debug)]
+enum VisitorAction {
+    Accept,
+    AcceptWithNote { note: String },
+    Refuse,
+    Probation,
+}
+
+#[derive(Debug)]
 struct Visitor {
     name: String,
-    greeting: String,
+    age: i8,
+    action: VisitorAction,
 }
 
 impl Visitor {
-    fn new(name: &str, greeting: &str) -> Self {
+    fn new(name: &str, age: i8, action: VisitorAction) -> Self {
         Self {
             name: name.to_lowercase(),
-            greeting: greeting.to_string(),
+            age,
+            action,
         }
     }
 
     fn greet_visitor(&self) {
-        println!("{}", self.greeting);
+        match &self.action {
+            VisitorAction::Accept => println!("Welcome tot he tree house, {}", self.name),
+            VisitorAction::AcceptWithNote { note } => {
+                println!("Welcome to the tree house, {}", self.name);
+                println!("{}", note);
+                if self.age < 21 {
+                    println!("Do not serve alcohol to {}", self.name);
+                }
+            }
+            VisitorAction::Probation => println!("{} is now a probationary member", self.name),
+            VisitorAction::Refuse => println!("Get out of here fart sniffer"),
+        }
     }
 }
 
@@ -29,10 +50,16 @@ fn what_is_your_name() -> String {
 
 fn main() {
     let mut visitor_list = vec![
-        Visitor::new("rance", "Hello supreme leader"),
-        Visitor::new("maddy", "Hi sexy woman"),
-        Visitor::new("mason", "Howdy Partner"),
-        Visitor::new("marcus", "So cute baby"),
+        Visitor::new("rance", 27, VisitorAction::Accept),
+        Visitor::new("maddy", 25, VisitorAction::Accept),
+        Visitor::new(
+            "mason",
+            2,
+            VisitorAction::AcceptWithNote {
+                note: String::from("Watch out for this tornado"),
+            },
+        ),
+        Visitor::new("marcus", 0, VisitorAction::Accept),
     ];
 
     loop {
@@ -50,7 +77,7 @@ fn main() {
                         "Sorry {}, I'll add you to the list for the next party.",
                         your_name
                     );
-                    visitor_list.push(Visitor::new(&your_name, "What's up bruh"));
+                    visitor_list.push(Visitor::new(&your_name, 39, VisitorAction::Accept));
                 }
             }
         }
